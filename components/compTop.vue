@@ -42,7 +42,7 @@ export default {
   text-align: center;
 }
 #logotop{
-  height: 3rem;
+  height: 5rem;
 }
 
 </style>

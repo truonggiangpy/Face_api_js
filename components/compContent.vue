@@ -5,14 +5,25 @@
         <button class="btn">Chọn Ảnh</button>
         <input id="up" type="file" name="myfile" @change="onFileChange" />
       </div>
+        <button class="btn" v-on:click="defaultt" >Mặc Định</button>
       <button v-on:click="start" class="btn">Nhận Diện Ảnh</button>
     </div>
       <div class="upload-btn-wrapper" id="containerRender"> 
         <div class="items" id="itemsLeft">
-         <div class="fixImageCanvas" id="imageDao">  <img id="imageupload" v-if="url" :src="url" /></div>
+         <div id="logoTop"><img id="clickme" v-show="showClick" src="../image/clickme.png">
+         <h2>Nhận dạng gương mặt trên browser.</h2>
+         <ul>
+           <li>Phát hiện khuôn mặt và nhận diện khuôn mặt</li>
+           <li>Xác thực gương mặt</li>
+           <li>Nhận diện cảm xúc của gương mặt</li>
+           <li>Dự đoán tuổi và nhận diện giới tính</li>
+         </ul>
+         </div>
+        <div class="fixImageCanvas" id="imageDao">  <img id="imageupload" v-if="url" :src="url" /></div>
   
       </div> 
         <div class="items" id="itemsRight">
+          <div id="logoTop"><img id="beforeReco" v-show="showClick" src="../image/beforeReco.png"></div>
            <div id="preview" v-show="showImageRight">
             <div class="fixImageCanvas" id="imageDao">  <img id="imageupload" v-if="url" :src="url" /></div>
             <div class="fixImageCanvas" id="imageCanvas">  </div>
@@ -43,7 +54,8 @@ export default {
       msg: 'Nguyễn Trường Giang',
        url: null,
        imgEl: null,
-       showImageRight: false
+       showImageRight: false,
+       showClick: true
     }
   },
 
@@ -98,8 +110,15 @@ export default {
       try{document.getElementById("div1").remove()}
       catch(exeption){}
        this.showImageRight=false
+       this.showClick=false
       
     },
+    defaultt(e) {
+      this.showClick=true
+      this.url= null
+      try{document.getElementById("div1").remove()}
+      catch(exeption){}
+    }
 
   }
 
@@ -165,7 +184,7 @@ export default {
 }
   #container{
     width: 80%;
-    margin: 30px auto;
+    margin: 50px auto;
     height: 100%;
     position: relative;
   }
@@ -185,7 +204,14 @@ export default {
     #div1{
       border: red solid  1px;
     }
-
-
+#clickme{
+  width: 17rem
+}
+#beforeReco{
+  width: 35rem
+}
+h2,ul,li{
+    font-family: "Comic Sans MS", cursive, sans-serif;
+}
     
 </style>
