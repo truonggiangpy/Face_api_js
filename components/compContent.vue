@@ -6,7 +6,10 @@
         <input id="up" type="file" name="myfile" @change="onFileChange" />
       </div>
         <button class="btn" v-on:click="defaultt" >Mặc Định</button>
-      <button v-on:click="start" class="btn">Nhận Diện Ảnh</button>
+      <div id="detect">
+        <button v-on:click="nhandienanhs" class="btn">Nhận Diện Ảnh</button>
+        <button v-on:click="nhandienchungs" class="btn">Nhận Diện Tuổi, Cảm Xúc và Giới Tính</button>
+      </div>
     </div>
       <div class="upload-btn-wrapper" id="containerRender"> 
         <div class="items" id="itemsLeft">
@@ -23,15 +26,23 @@
   
       </div> 
         <div class="items" id="itemsRight">
-          <div id="logoTop"><img id="beforeReco" v-show="showClick" src="../image/beforeReco.png"></div>
-           <div id="preview" v-show="showImageRight">
-            <div class="fixImageCanvas" id="imageDao">  <img id="imageupload" v-if="url" :src="url" /></div>
-            <div class="fixImageCanvas" id="imageCanvas">  </div>
-          </div>   
+          <div id="nhandienanh" v-show="nhandienanh" >
+            <div id="logoTop"><img id="beforeReco" v-show="showClick" src="../image/beforeReco.png"></div>
+            <div id="preview" v-show="showImageRight">
+              <div class="fixImageCanvas" id="imageDao">  <img id="imageupload" v-if="url" :src="url" /></div>
+              <div class="fixImageCanvas" id="imageCanvas">  </div>
+            </div>  
+          </div>
+          <div id="nhandienchung" v-show="nhandienchung">
+            <ul>
+              <li>Dự Đoán Giới Tính <h3>{{gender}}</h3></li>
+              <li>Dự Đoán Tuổi <h3>{{age}}</h3></li>
+              <li>Dự Đoán Cảm Xúc <h3>{{FaceExpressions}}</h3></li>
+            </ul>
+          </div>
         </div>
      </div> 
   </div>
-
 </template>
 <script>
 import * as faceapi from 'face-api.js'
@@ -45,7 +56,9 @@ export default {
     Promise.all([
     faceapi.loadFaceRecognitionModel('./models'),
     faceapi.loadFaceLandmarkModel('./models'),
-    faceapi.loadSsdMobilenetv1Model('./models')
+    faceapi.loadSsdMobilenetv1Model('./models'),
+    faceapi.loadFaceExpressionModel('./models'),
+    faceapi.loadAgeGenderModel('./models')
     ])
     this.imgEl = document.getElementById("targetImg");
   },
@@ -55,31 +68,79 @@ export default {
        url: null,
        imgEl: null,
        showImageRight: false,
-       showClick: true
+       showClick: true,
+       nhandienanh: true,
+       nhandienchung: false,
+       gender: null,
+       age: null,
+       FaceExpressions: null,
+
+       
     }
   },
 
   computed: {
   },
+  watch: {
+    FaceExpressions () {
+       var Expressq
+      try{
+        //this.FaceExpressions = this.FaceExpressions.toString().replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+         Expressq = this.FaceExpressions.toString().replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+      }
+      catch(e){
+      }
 
-  methods: {
-    async  start (e) {
-       this.call(e)
+      switch(Expressq){
+        case 'angry':  this.FaceExpressions = 'Tức Giận'
+          break;
+        case 'disgusted':  this.FaceExpressions = 'Chán Ghét'
+          break;
+        case 'fearful':  this.FaceExpressions = 'Sợ Hãi'
+          break;
+        case 'happy':  this.FaceExpressions = 'Vui Vẻ Hạnh Phúc'
+          break;
+        case 'neutral':  this.FaceExpressions = 'Bình Thường'
+          break;
+        case 'sad':  this.FaceExpressions = 'Buồn'
+          break;
+        case 'surprised':  this.FaceExpressions = 'Ngạc Nhiên'
+          break;
+          
+      }
+    }
   },
 
-  async call(e) {
+  methods: {
+    nhandienanhs (e) {
+      try{document.getElementById("div1").remove()}
+      catch(exeption){}
+      if(this.showClick ===false)
+      {
+        this.nhandienanh = true
+        this.nhandienchung = false
+        this.faceRecognition(e)
+      }
+    },
+
+    nhandienchungs(e) {
+      this.faceDetect(e)
+    },
+
+  async faceRecognition(e) {
     this.showImageRight=true
     const canvass = document.getElementById("imageCanvas");
     const labeledFaceDescriptors = await this.loadLabeledImages()
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.4)
-    const image = await  faceapi.bufferToImage(e.target.parentNode.childNodes[0].childNodes[2].files[0])
+    const image = await  faceapi.bufferToImage(e.target.parentNode.parentNode.childNodes[0].childNodes[2].files[0])
     const canvas = faceapi.createCanvasFromMedia(image)
     canvas.setAttribute("id", "div1")
     canvass.append(canvas)
     const displaySize = { width: image.width,  height: image.height }
     faceapi.matchDimensions(canvas, displaySize)
-    const detections = await  faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
+    const detections = await  faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors().withFaceExpressions().withAgeAndGender()
     const resizedDetections = faceapi.resizeResults(detections, displaySize)
+    
     const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
     results.forEach((result,i) => {
       const box = resizedDetections[i].detection.box
@@ -88,6 +149,35 @@ export default {
     })
       document.getElementById("div1").style="width: 40rem;  "
   },
+  
+  async faceDetect(e) {
+    this.nhandienanh = false
+    this.nhandienchung = true
+    const image = await  faceapi.bufferToImage(e.target.parentNode.parentNode.childNodes[0].childNodes[2].files[0])
+    const detections = await  faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors().withFaceExpressions().withAgeAndGender()
+    if(this.showClick ===false)
+      {
+        var gioitinh= null
+        if (detections[0].gender === 'male'){
+          gioitinh = 'Nam'
+        }
+        else {
+          gioitinh = 'Nữ'
+        }
+        this.gender = gioitinh
+        this.age= Math.round(detections[0].age)
+        const maxValue = await Math.max(...Object.values(detections[0].expressions));
+        this.FaceExpressions = await Object.keys(detections[0].expressions).filter(
+        item => detections[0].expressions[item] === maxValue
+       
+      );
+      if(this.FaceExpressions === "[ 'neutral' ]"){
+        console.log('dsf')
+      }
+      }
+  },
+
+
 
   loadLabeledImages()  {
     const labels = ['khang','Giang', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor' ]
@@ -114,16 +204,18 @@ export default {
       
     },
     defaultt(e) {
+      this.nhandienanh = true
+      this.nhandienchung = false
       this.showClick=true
       this.url= null
+      this.gender= null
+      this.age= null
+      this.FaceExpressions= null
       try{document.getElementById("div1").remove()}
       catch(exeption){}
     }
 
   }
-
-
-
 }
 </script>
 <style scoped>
@@ -210,8 +302,18 @@ export default {
 #beforeReco{
   width: 35rem
 }
-h2,ul,li{
+h3,ul,li{
     font-family: "Comic Sans MS", cursive, sans-serif;
+}
+#nhandienchung > *{
+  font-size: 30px;
+  line-height: 70px;
+   text-align: center;
+   list-style-type: none;
+}
+li> h3{
+  color:blue;
+ 
 }
     
 </style>
