@@ -38,7 +38,7 @@ export default {
 </script>
 <style scoped>
 #container_top{
-  background: mediumblue;
+  background: rgb(1 127 255);
   text-align: center;
 }
 #logotop{
