@@ -1,5 +1,5 @@
 <template>
-  <div id="footer" class="btn">
+  <div id="footerr" class="btn">
       <div id="footerCenter">
         <div style="padding-top: 25px">Copyright © 2021 Nguyễn Trường Giang</div>
       </div>
@@ -7,7 +7,7 @@
 </template>
 <script>
 export default {
-  name: 'footer',
+  name: 'footerr',
   data () {
     return {
 
@@ -25,7 +25,7 @@ export default {
 
 </script>
 <style scoped>
-#footer{
+#footerr{
     background: #c4c4c4;
     text-align: center;
     border-top: rgb(190, 190, 190) 1px solid;

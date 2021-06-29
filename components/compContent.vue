@@ -46,15 +46,15 @@
       <div class="container2">
         <div id='control'>
           <div style="color:blue">
-            <a @click="addTableLine" href="#" id="Filter" style="color: blue;"
+            <a @click="addTableLine" href="javascript:;" id="Filter" style="color: blue;"
               >Add Data &nbsp; &nbsp;</a
             >
           </div>
-            <div style="color:blue">
+            <!-- <div style="color:blue">
             <a @click="filterData" href="#" id="FilterData" style="color: blue;"
               >Filter data &nbsp; &nbsp;</a
             >
-          </div>
+          </div> -->
         </div>
         <div class="search-wrapper">
            <input id="hahaserch" type="text"  placeholder="Search Face"/>
@@ -260,14 +260,9 @@
                 <a href="#contact">Contact</a>
               </div>
             </div> -->
-          <div class="dropup">
-            <button class="dropbtn"  check="0">...</button>
-            <div class="dropup-content">
-              <button >Edit</button>
-              <button ><a style ="color: rgb(0, 0, 0)"  href="#id01">remove</a></button>
+              <button @click="editInfoFace">Edit</button>
+              <button @click="confirmRemove">Remove</button>
               <!-- <button>Link 3</button> -->
-            </div>
-          </div>
             </div>
             <div
               class="col8"
@@ -275,6 +270,7 @@
               style="text-align: center"
             >
               <a href="#" class="add" @click="confirmAddLine">Confirm</a>
+              <a href="#" class="remove" @click="cancelAddLine">Cancel</a>
               <a href="#" class="remove" @click="cancelAddLine">Cancel</a>
             </div>
             <div
@@ -289,10 +285,15 @@
         </div>
       </div>
     </div>
-    
+    <createInforFace
+     @confirmCancel="confirmCancel"
+     :datatrunggian="datatrunggian"
+     v-show="showModel"
+    />
   </div>
 </template>
 <script>
+import createInforFace from './createInforFace.vue'
 import axios from 'axios'
 import * as faceapi from 'face-api.js'
 import "regenerator-runtime"
@@ -304,7 +305,7 @@ const api = axios.create({
 export default {
   name: 'Face-api-js',
   components: {
-
+    createInforFace,
   },
 
   created () {
@@ -328,6 +329,7 @@ export default {
   },
   data () {
     return {
+      showModel : false,
       msg: 'Nguyễn Trường Giang',
       url: null,
       imgEl: null,
@@ -341,8 +343,8 @@ export default {
       FaceExpressions: null,
       arrayTemtam: [],
       arrayTem: [],
-      tinhTrang: 'defaule'
-       
+      tinhTrang: 'defaule',
+      datatrunggian: {}
     }
   },
 
@@ -399,6 +401,7 @@ export default {
   async faceRecognition(e) {
     this.showImageRight=true
     const canvass = document.getElementById("imageCanvas");
+    console.log(this.loadLabeledImages())
     const labeledFaceDescriptors = await this.loadLabeledImages()
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5)
     const image = await  faceapi.bufferToImage(e.target.parentNode.parentNode.childNodes[0].childNodes[2].files[0])
@@ -508,17 +511,84 @@ export default {
       catch(exeption){}
     },
 
-    addTableLine(e) {
+    confirmRemove (e) {
+      let index = 0
+      let etarget = e.target.parentNode.parentNode.childNodes[0].innerHTML
+      console.log(etarget)
+      // let check = true
+      for (let [i] of this.arrayTemtam.entries()) {
+        if (String(etarget) === String(this.arrayTemtam[i].id)) {
+          index = i
+        }
+      }
+      api.get('/task/delete/' + this.arrayTemtam[index]._id)
+        .then(response => {
+        })
+      axios
+        .get('http://localhost:3000/tasks')
+        .then(response => (this.arrayTemtam = response.data))
+    },
 
+    editInfoFace(e){
+      var index = 1
+       var etarget = e.target.parentNode.parentNode
+
+      for (let [i] of this.arrayTemtam.entries()) {
+          if (etarget.childNodes[0].innerHTML.toString() === this.arrayTemtam[i].id.toString()) {
+            index = i
+          }
+        }
+     
+      let data = {
+        e: e,
+        id: etarget.childNodes[0].innerHTML,
+        ten: etarget.childNodes[2].innerHTML,
+        lop: etarget.childNodes[4].innerHTML,
+        gioitinh: etarget.childNodes[6].innerHTML,
+        khoa: etarget.childNodes[8].innerHTML,
+        ngaysinh: etarget.childNodes[10].innerHTML,
+        ngaynhaphoc: etarget.childNodes[12].innerHTML,
+        _id: this.arrayTemtam[index]._id
+      }
+
+       this.showModel = true
+       this.datatrunggian= data
+    },
+
+    confirmCancel (e) { // dùng để xác nhận cancel khi đang tạo teamplate
+      this.showModel = false
+      if(e.checkUpdate === true) {
+        let etarget = e.e.target.parentNode.parentNode
+        etarget.childNodes[0].innerHTML = e.id
+        etarget.childNodes[2].innerHTML =  e.ten
+        etarget.childNodes[4].innerHTML = e.lop
+        if (e.gioitinh === true) {
+          etarget.childNodes[6].innerHTML = "Nam"
+        }
+        else {
+          etarget.childNodes[6].innerHTML = "Nu"
+        }
+        etarget.childNodes[8].innerHTML = e.khoa
+        etarget.childNodes[10].innerHTML = e.ngaysinh
+        etarget.childNodes[12].innerHTML = e.ngaynhaphoc
+      }
+
+    },
+
+    addTableLine(e) {
+      let data = {
+        check: true
+      }
+
+       this.showModel = true
+       this.datatrunggian= data
     },
 
     filterData(e) {
 
     },
     
-    search(e) {
 
-    },
     
     click(e) {
 
@@ -838,7 +908,7 @@ a {
   width: 10%;
 }
 .col2 {
-  width: 21%;
+  width: 13%;
 }
 .col3 {
   width: 10%;
@@ -856,15 +926,15 @@ a {
   width: 13%;
 }
 .col8 {
-  width: 9%;
+  width: 20%;
 }
-.dropbtn {
+/* .dropbtn {
   font-size: 20px;
   height: 5px;
   background-color: rgb(255, 255, 255);
   border: 0px;
   outline:#ffffff
-}
+} */
 
 .dropup {
   position: relative;
