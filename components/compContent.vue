@@ -47,14 +47,8 @@
         <div id='control'>
           <div style="color:blue">
             <a @click="addTableLine" href="javascript:;" id="Filter" style="color: blue;"
-              >Add Data &nbsp; &nbsp;</a
-            >
+              >Add Data &nbsp; &nbsp;</a>
           </div>
-            <!-- <div style="color:blue">
-            <a @click="filterData" href="#" id="FilterData" style="color: blue;"
-              >Filter data &nbsp; &nbsp;</a
-            >
-          </div> -->
         </div>
         <div class="search-wrapper">
            <input id="hahaserch" type="text"  placeholder="Search Face"/>
@@ -76,211 +70,27 @@
             class="flex-container"
             v-for="(user,idx) in arrayTemtam"
             :key="idx"
-            @dblclick="editLine"
+            @dblclick="editLine">
+          <div class="col1">{{ user.id.toString() }}</div>
+          <div class="col2" v-if="tinhTrang === 'defaule'">{{ user.ten }}</div>
+          <div class="col3" v-if="tinhTrang === 'defaule' ">{{ user.lop }}</div>
+          <div class="col4" v-if="user.gioitinh === true">Nam</div>
+          <div class="col5" v-if="tinhTrang === 'defaule'">
+            {{ user.khoa }}
+          </div>
+          <div class="col6" v-if="tinhTrang === 'defaule'">
+            {{ user.ngaysinh }}
+          </div>
+          <div class="col7" v-if="tinhTrang === 'defaule'">  {{ user.ngaynhaphoc }}</div>
+          <div
+            id="dd"
+            class="col8"
+            v-if="tinhTrang === 'defaule'"
+            style="text-align: center"
           >
-            <div class="col1">{{ user.id.toString() }}</div>
-            <div class="col2" v-if="tinhTrang === 'defaule'">{{ user.ten }}</div>
-            <div class="col2" v-else-if="user.node2 == 'Cancel'">
-              <input
-                
-                
-                style="width: 90%; flex-grow: 1"
-                type="text"
-                class="create"
-                placeholder="Nhập Temlate"
-                v-model="Temlate"
-                name="Temlate_Name"
-              />
-            </div>
-            <div class="col2" v-else-if="user.node2 == 'Cancel_row'">
-              <input
-                @keyup.esc="cancelEdit"
-                @keyup.enter="confirmEnter"
-                style="width: 90%; flex-grow: 1"
-                type="text"
-                class="create"
-                placeholder="Nhập Temlate"
-                v-model="arrayTemtam[index_edit].Temlate"
-                name="Temlate_Name"
-              />
-            </div>
-            <div class="col3" v-if="tinhTrang === 'defaule' ">{{ user.lop }}</div>
-            <div class="col3" v-else-if="user.node2 == null && user.Type == false">Production</div>
-            <div class="col3" v-else-if="user.node2 == 'Cancel'">
-              <select
-                
-                
-                style="width: 90%"
-                class="create"
-                v-model="Type"
-                id="type"
-                name="type"
-              >
-                <option value="1">Payoll</option>
-                <option value="2">Production</option>
-              </select>
-            </div>
-            <div class="col3" v-else-if="user.node2 == 'Cancel_row'">
-              <select
-                @keyup.enter="confirmEnter"
-                @keyup.esc="cancelEdit"
-                style="width: 90%"
-                class="create"
-                v-model="arrayTemtam[index_edit].Type"
-                id="type"
-                name="type"
-              >
-                <option value="Payoll">Payoll</option>
-                <option value="Production">Production</option>
-              </select>
-            </div>
-            <div class="col4" v-if="user.gioitinh === true">Nam</div>
-             <div class="col4" v-else-if="user.gioitinh === false">Nữ</div>
-            <div class="col4" v-else-if="user.node2 == 'Cancel'">
-              <input
-                
-                
-                style="width: 90%"
-                v-model="Company"
-                type="text"
-                class="create"
-                id="fname"
-                placeholder="Nhập Conpany"
-                name="Company"
-              />
-            </div>
-            <div class="col4" v-else-if="user.node2 == 'Cancel_row'">
-              <input
-                @keyup.enter="confirmEnter"
-                @keyup.esc="cancelEdit"
-                style="width: 90%"
-                v-model="arrayTemtam[index_edit].Company"
-                type="text"
-                class="create"
-                id="fname"
-                placeholder="Nhập Conpany"
-                name="Company"
-              />
-            </div>
-            <div class="col5" v-if="tinhTrang === 'defaule'">
-              {{ user.khoa }}
-            </div>
-            <div class="col5" v-else-if="user.node2 == 'Cancel'">
-              <input
-                
-                
-                style="width: 90%"
-                v-model="VersionDate"
-                type="date"
-                class="create"
-                id="myDate"
-                value="0000-00-00"
-              />
-            </div>
-            <div class="col5" v-else-if="user.node2 == 'Cancel_row'">
-              <input
-                @keyup.enter="confirmEnter"
-                @keyup.esc="cancelEdit"
-                style="width: 90%"
-                v-model="arrayTemtam[index_edit].VersionDate"
-                type="date"
-                class="create"
-                id="myDate"
-                value="0000-00-00"
-              />
-            </div>
-            <div class="col6" v-if="tinhTrang === 'defaule'">
-              {{ user.ngaysinh }}
-            </div>
-            <div class="col6" v-else-if="user.node2 == 'Cancel'">
-              <input
-                
-                
-                style="width: 90%"
-                v-model="ExpirationD"
-                type="date"
-                class="create"
-                id="myDate"
-                value="0000-00-00"
-              />
-            </div>
-            <div class="col6" v-else-if="user.node2 == 'Cancel_row'">
-              <input
-                @keyup.enter="confirmEnter"
-                @keyup.esc="cancelEdit"
-                style="width: 90%"
-                v-model="arrayTemtam[index_edit].ExpirationD"
-                type="date"
-                class="create"
-                id="myDate"
-                value="1999-02-10"
-              />
-            </div>
-            <div class="col7" v-if="tinhTrang === 'defaule'">  {{ user.ngaynhaphoc }}</div>
-            <div class="col7" v-else-if="user.node2 == null && user.Active == false">Archive</div>
-            <div class="col7" v-else-if="user.node2 == 'Cancel'">
-              <select
-                
-                
-                v-model="Active"
-                style="width: 90%"
-                class="create"
-                id="country"
-                name="country"
-              >
-                <option value="1">Active</option>
-                <option value="2">Archive</option>
-              </select>
-            </div>
-            <div class="col7" v-else-if="user.node2 == 'Cancel_row'">
-              <select
-                @keyup.enter="confirmEnter"
-                @keyup.esc="cancelEdit"
-                v-model="arrayTemtam[index_edit].Active"
-                style="width: 90%"
-                class="create"
-                id="country"
-                name="country"
-              >
-                <option value="Active">Active</option>
-                <option value="Archive">Archive</option>
-              </select>
-            </div>
-            <div
-              id="dd"
-              class="col8"
-              v-if="tinhTrang === 'defaule'"
-              style="text-align: center"
-            >
-            <!-- <div class="dropup">
-              <a @click="optionSetting" class="dropbtn">...</a>
-              <div class="dropup-content">
-                <a href="#home">Home</a>
-                <a href="#about">About</a>
-                <a href="#contact">Contact</a>
-              </div>
-            </div> -->
-              <button @click="editInfoFace">Edit</button>
-              <button @click="confirmRemove">Remove</button>
-              <!-- <button>Link 3</button> -->
-            </div>
-            <div
-              class="col8"
-              v-else-if="user.node2 == 'Cancel'"
-              style="text-align: center"
-            >
-              <a href="#" class="add" @click="confirmAddLine">Confirm</a>
-              <a href="#" class="remove" @click="cancelAddLine">Cancel</a>
-              <a href="#" class="remove" @click="cancelAddLine">Cancel</a>
-            </div>
-            <div
-              class="col8"
-              v-else-if="user.node2 == 'Cancel_row'"
-              style="text-align: center"
-            >
-              <a href="#" class="add" @click="confirmEdit">Confirm</a>
-              <a href="#" class="remove" @click="cancelEdit">Cancel</a>
-            </div>
+            <button @click="editInfoFace">Edit</button>
+            <button @click="confirmRemove">Remove</button>
+          </div>
           </div>
         </div>
       </div>
@@ -357,12 +167,10 @@ export default {
     FaceExpressions () {
        var Expressq
       try{
-        //this.FaceExpressions = this.FaceExpressions.toString().replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
          Expressq = this.FaceExpressions.toString().replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
       }
       catch(e){
       }
-
       switch(Expressq){
         case 'angry':  this.FaceExpressions = 'Tức Giận'
           break;
@@ -393,7 +201,6 @@ export default {
         this.faceRecognition(e)
       }
     },
-
     nhandienchungs(e) {
       this.faceDetect(e)
     },
@@ -412,7 +219,9 @@ export default {
     faceapi.matchDimensions(canvas, displaySize)
     const detections = await  faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors().withFaceExpressions().withAgeAndGender()
     const resizedDetections = faceapi.resizeResults(detections, displaySize)
-  
+      console.log(detections[0].age)
+      console.log(detections[0].gender)
+       console.log(detections)
     const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
     
     this.getdata(results)
@@ -451,6 +260,7 @@ export default {
     this.nhandienchung = true
     const image = await  faceapi.bufferToImage(e.target.parentNode.parentNode.childNodes[0].childNodes[2].files[0])
     const detections = await  faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors().withFaceExpressions().withAgeAndGender()
+
     if(this.showClick ===false)
       {
         var gioitinh= null
@@ -467,16 +277,15 @@ export default {
         item => detections[0].expressions[item] === maxValue
        
       );
-      if(this.FaceExpressions === "[ 'neutral' ]"){
-        
-      }
+        if(this.FaceExpressions === "[ 'neutral' ]")
+        {
+        }
       }
   },
 
 
-
   loadLabeledImages()  {
-    const labels = ['khang','Giang', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor' ]
+    const labels = ['khang','Giang', 'ha', 'nguyen', 'van', 'huy', 'Ala' ]
     return Promise.all(
       labels.map(async label => {
         const descriptions = []
@@ -572,14 +381,12 @@ export default {
         etarget.childNodes[10].innerHTML = e.ngaysinh
         etarget.childNodes[12].innerHTML = e.ngaynhaphoc
       }
-
     },
 
     addTableLine(e) {
       let data = {
         check: true
       }
-
        this.showModel = true
        this.datatrunggian= data
     },
@@ -588,7 +395,6 @@ export default {
 
     },
     
-
     
     click(e) {
 

@@ -14,12 +14,9 @@ export default {
     }
   },
   watch: {
-
   },
 
   methods: {
-
-
   }
 }
 

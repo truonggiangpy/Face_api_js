@@ -18,12 +18,8 @@ export default {
     CompContent,
     Footer
   },
- 
 }
-
-
 </script>
-
 <style >
 
 body{
